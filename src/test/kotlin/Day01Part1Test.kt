@@ -2,7 +2,7 @@ import day01.Day01
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
-class Day01Test : StringSpec() {
+class Day01Part1Test : StringSpec() {
 
     init {
         "one elf - should return its calories sum" {
