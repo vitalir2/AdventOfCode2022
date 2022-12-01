@@ -1,12 +1,19 @@
-import java.io.File
 import java.math.BigInteger
+import java.nio.file.Path
 import java.security.MessageDigest
+import kotlin.io.path.readLines
 
 /**
  * Reads lines from the given input txt file.
  */
-fun readInput(name: String) = File("src", "$name.txt")
+fun readInput(day: Int, name: String) = Path.of(
+    "src", "main", "kotlin",
+    "day${day.asTwoDigitNumber}", "$name.txt"
+)
     .readLines()
+
+private val Int.asTwoDigitNumber: String
+    get() = "%02d".format(this)
 
 /**
  * Converts string to md5 hash.
