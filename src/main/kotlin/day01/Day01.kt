@@ -1,13 +1,15 @@
 package day01
 
-import readInput
+import Challenge
 
-object Day01  {
-    fun part1(input: List<String>): Int {
+object Day01 : Challenge  {
+    override val day: Int = 1
+
+    override fun part1(input: List<String>): Int {
         return calculateCaloriesForEveryElf(input).maxOrNull() ?: 0
     }
 
-    fun part2(input: List<String>): Int {
+    override fun part2(input: List<String>): Int {
         val caloriesForEveryElf = calculateCaloriesForEveryElf(input)
         val firstMax = caloriesForEveryElf.maxOrNull() ?: 0
         val secondMax = (caloriesForEveryElf - firstMax).maxOrNull() ?: 0
@@ -28,14 +30,5 @@ object Day01  {
         }
         caloriesForEveryElf.add(currentElfCalories)
         return caloriesForEveryElf
-    }
-}
-
-fun main(args: Array<String>) {
-    val input = readInput(1, "Day01")
-    when (args[0].toInt()) {
-        1 ->     println(Day01.part1(input))
-        2 ->     println(Day01.part2(input))
-        else -> error("Invalid part, exists only two parts")
     }
 }

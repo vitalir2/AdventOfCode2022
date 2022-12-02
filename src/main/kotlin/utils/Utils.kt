@@ -12,7 +12,7 @@ fun readInput(day: Int, name: String) = Path.of(
 )
     .readLines()
 
-private val Int.asTwoDigitNumber: String
+val Int.asTwoDigitNumber: String
     get() = "%02d".format(this)
 
 /**
