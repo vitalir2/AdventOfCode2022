@@ -2,7 +2,7 @@ import day02.Day02
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
-class Day02Part1 : StringSpec() {
+class Day02Part1Test : StringSpec() {
 
     init {
 
