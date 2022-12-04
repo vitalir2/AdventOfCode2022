@@ -1,7 +1,7 @@
-import day03.Day03
+import day04.Day04
 
 fun main(args: Array<String>) {
-    val challenge: Challenge = Day03
+    val challenge: Challenge = Day04
     val input = readInput(challenge.day, "Day${challenge.day.asTwoDigitNumber}")
     when (args[0].toInt()) {
         1 ->     println(challenge.part1(input))

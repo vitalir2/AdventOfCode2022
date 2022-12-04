@@ -25,3 +25,8 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
 fun String.split(numberOfParts: Int): List<String> {
     return chunked(length / numberOfParts)
 }
+
+fun String.toIntRange(separator: String): IntRange {
+    val (start, end) = split(separator).map(String::toInt)
+    return start..end
+}
