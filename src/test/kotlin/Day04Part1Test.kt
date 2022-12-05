@@ -2,10 +2,10 @@ import day04.Day04
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
-class Day04TestPart2Test : StringSpec() {
+class Day04Part1Test : StringSpec() {
 
     init {
-        val testedMethod = Day04::part2
+        val testedMethod = Day04::part1
 
         "both ranges do not intersect" {
             val input = listOf("2-4,6-7")
@@ -36,7 +36,7 @@ class Day04TestPart2Test : StringSpec() {
 
             val result = testedMethod(input)
 
-            result shouldBe 1
+            result shouldBe 0
         }
 
         "both are equal" {
@@ -47,12 +47,12 @@ class Day04TestPart2Test : StringSpec() {
             result shouldBe 1
         }
 
-        "three ranges intersect with other ones" {
-            val input = listOf("5-6,1-7", "11-16,12-13", "5-6,6-7")
+        "two ranges fully contain other ones" {
+            val input = listOf("5-6,1-7", "11-16,12-13")
 
             val result = testedMethod(input)
 
-            result shouldBe 3
+            result shouldBe 2
         }
     }
 }
