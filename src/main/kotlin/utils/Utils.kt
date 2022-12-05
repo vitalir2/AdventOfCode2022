@@ -30,3 +30,7 @@ fun String.toIntRange(separator: String): IntRange {
     val (start, end) = split(separator).map(String::toInt)
     return start..end
 }
+
+inline fun <T, U> IndexedValue<T>.map(transform: (T) -> U): IndexedValue<U> {
+    return IndexedValue(index, transform(value))
+}
