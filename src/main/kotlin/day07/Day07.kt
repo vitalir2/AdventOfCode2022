@@ -7,24 +7,30 @@ import kotlin.contracts.contract
 object Day07 : Challenge {
     override val day: Int = 7
 
-    private var root = Node.Folder(null, "/")
+    private lateinit var fileSystemRoot: Node.Folder
     private lateinit var currentFolder: Node.Folder
 
     override fun part1(input: List<String>): Any {
         resetLastFileSystem()
         input.forEach(::parseLine)
-        return root.allSizesOfFolders
+        return fileSystemRoot.allSizesOfFolders
             .filter { it <= PART1_DIR_SIZE_THRESHOLD }
             .sum()
     }
 
     override fun part2(input: List<String>): Any {
-        TODO()
+        resetLastFileSystem()
+        input.forEach(::parseLine)
+        val freeSize = TOTAL_FILE_SYSTEM_SIZE - fileSystemRoot.size
+        return fileSystemRoot.allSizesOfFolders
+            .filter { freeSize + it > NEED_FOR_UPDATE_SIZE }
+            .min()
+
     }
 
     private fun resetLastFileSystem() {
-        root = Node.Folder(null, "/")
-        currentFolder = root
+        fileSystemRoot = Node.Folder(null, "/")
+        currentFolder = fileSystemRoot
     }
 
     private fun parseLine(line: String) {
@@ -41,7 +47,7 @@ object Day07 : Challenge {
                 val argument = splitLine[2]
                 currentFolder = when (argument) {
                     "/" -> {
-                        root
+                        fileSystemRoot
                     }
 
                     ".." -> {
@@ -73,6 +79,8 @@ object Day07 : Challenge {
     }
 
     private const val PART1_DIR_SIZE_THRESHOLD = 100_000
+    private const val TOTAL_FILE_SYSTEM_SIZE = 70_000_000
+    private const val NEED_FOR_UPDATE_SIZE = 30_000_000
 }
 
 private sealed interface Node {
