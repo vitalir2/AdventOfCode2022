@@ -19,13 +19,17 @@ object Day08 : Challenge {
 
                 val isVisibleFrom = mutableListOf<Direction>()
                 for (direction in Direction.values()) {
+                    var isVisible = true
                     forest.traverseInDirection(rowIndex, columnIndex, direction) { otherTree ->
                         if (otherTree >= tree) {
-                            isVisibleFrom.add(direction)
-                            return@traverseInDirection
+                            isVisible = false
                         }
                     }
+                    if (isVisible) {
+                        isVisibleFrom.add(direction)
+                    }
                 }
+
                 if (isVisibleFrom.isNotEmpty()) {
                     visibleTrees.add(tree)
                 }
@@ -36,7 +40,35 @@ object Day08 : Challenge {
     }
 
     override fun part2(input: List<String>): Any {
-        TODO()
+        val forest = createForest(input)
+        val viewScores = mutableListOf<Int>()
+        for ((rowIndex, row) in forest.withIndex()) {
+            for ((columnIndex, tree) in row.withIndex()) {
+                if (forest.isOnEdge(rowIndex, columnIndex)) {
+                    viewScores.add(0)
+                    continue
+                }
+
+                val visibilityScoresForTree = mutableListOf<Int>()
+                for (direction in Direction.values()) {
+                    var stopScoring = false
+                    var visibilityScore = 0
+                    forest.traverseInDirection(rowIndex, columnIndex, direction) { otherTree ->
+                        if (!stopScoring) {
+                            visibilityScore++
+                        }
+                        if (otherTree >= tree) {
+                            stopScoring = true
+                        }
+                    }
+                    visibilityScoresForTree.add(visibilityScore)
+                }
+                val totalScore = visibilityScoresForTree.reduce { acc, i -> acc * i }
+                viewScores.add(totalScore)
+            }
+        }
+
+        return viewScores.max()
     }
 
     private fun createForest(input: List<String>): Forest {
