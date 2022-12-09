@@ -9,10 +9,17 @@ object Day09 : Challenge {
     override val day: Int = 9
 
     override fun part1(input: List<String>): Any {
+        return modelRopeMovement(input, ROPE_LENGTH_PART_1)
+    }
 
-        var headCoordinates = Coordinates(0, 0)
-        var tailCoordinates = headCoordinates
-        val lastTailCoordinates = mutableSetOf(tailCoordinates)
+    override fun part2(input: List<String>): Any {
+        return modelRopeMovement(input, ROPE_LENGTH_PART_2)
+    }
+
+    private fun modelRopeMovement(input: List<String>, ropeLength: Int): Int {
+        val rope = List(ropeLength - 1) { Coordinates(0, 0) }.toMutableList() // last - tail
+        var headCoordinates = rope.first()
+        val tailCoordinatesHistory = mutableSetOf(rope.last())
 
         for (command in input) {
             val splitCommand = command.split(" ")
@@ -25,17 +32,20 @@ object Day09 : Challenge {
                     'L' -> headCoordinates = headCoordinates.moveLeft()
                     'U' -> headCoordinates = headCoordinates.moveUp()
                 }
-                tailCoordinates = tailCoordinates moveToTouch headCoordinates
-                lastTailCoordinates.add(tailCoordinates)
+                for (ropePartIndex in rope.indices) {
+                    var ropePart = rope[ropePartIndex]
+                    val previousRopePart = rope.getOrElse(ropePartIndex-1) { headCoordinates }
+                    ropePart = ropePart moveToTouch previousRopePart
+                    if (ropePartIndex == rope.lastIndex) {
+                        tailCoordinatesHistory.add(ropePart)
+                    }
+                    rope[ropePartIndex] = ropePart
+                }
             }
         }
 
 
-        return lastTailCoordinates.count()
-    }
-
-    override fun part2(input: List<String>): Any {
-        TODO("Not yet implemented")
+        return tailCoordinatesHistory.count()
     }
 
     private infix fun Coordinates.moveToTouch(other: Coordinates): Coordinates {
@@ -51,4 +61,7 @@ object Day09 : Challenge {
             }
         }
     }
+
+    private const val ROPE_LENGTH_PART_1 = 2
+    private const val ROPE_LENGTH_PART_2 = 10
 }
