@@ -2,7 +2,7 @@ abstract class Challenge(private val day: Int) {
     abstract fun part1(input: List<String>): Any
     abstract fun part2(input: List<String>): Any
 
-    fun runChallenge(part: Int) {
+    fun run(part: Int) {
         val input = readInput()
         when (part) {
             1 ->     println(part1(input))
