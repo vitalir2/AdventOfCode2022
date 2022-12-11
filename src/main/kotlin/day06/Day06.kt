@@ -2,8 +2,7 @@ package day06
 
 import Challenge
 
-object Day06 : Challenge {
-    override val day: Int = 6
+object Day06 : Challenge(6) {
 
     override fun part1(input: List<String>): Any {
         return findDistinctCharsEnd(input.joinToString(""), MARKER_LENGTH)

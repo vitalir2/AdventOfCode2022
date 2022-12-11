@@ -5,8 +5,7 @@ import utils.Coordinates
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
-object Day09 : Challenge {
-    override val day: Int = 9
+object Day09 : Challenge(9) {
 
     override fun part1(input: List<String>): Any {
         return modelRopeMovement(input, ROPE_LENGTH_PART_1)

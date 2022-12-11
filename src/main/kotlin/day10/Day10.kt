@@ -2,8 +2,7 @@ package day10
 
 import Challenge
 
-object Day10 : Challenge {
-    override val day: Int = 10
+object Day10 : Challenge(10) {
 
     override fun part1(input: List<String>): Any {
         val neededSignalStrength = List(6) { 20 + it * 40 }

@@ -2,7 +2,7 @@ package day02
 
 import Challenge
 
-object Day02 : Challenge {
+object Day02 : Challenge(2) {
 
     /**
      * my:
@@ -52,8 +52,6 @@ object Day02 : Challenge {
         "Y" to "ABC",
         "Z" to "CAB",
     )
-
-    override val day: Int = 2
 
     override fun part1(input: List<String>): Int {
         return input.sumOf {

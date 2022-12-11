@@ -5,8 +5,7 @@ import product
 
 private typealias MonkeyId = Int
 
-object Day11 : Challenge {
-    override val day: Int = 11
+object Day11 : Challenge(11) {
 
     override fun part1(input: List<String>): Any {
         return solveDay(input, 20) { level -> level / 3 }

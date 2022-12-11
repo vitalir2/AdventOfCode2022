@@ -3,8 +3,7 @@ package day04
 import Challenge
 import toIntRange
 
-object Day04 : Challenge {
-    override val day: Int = 4
+object Day04 : Challenge(4) {
 
     override fun part1(input: List<String>): Int {
         return countNumberOfElvesPairs(input) { firstInterval, secondInterval ->

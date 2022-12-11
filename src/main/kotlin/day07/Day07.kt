@@ -4,8 +4,7 @@ import Challenge
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
-object Day07 : Challenge {
-    override val day: Int = 7
+object Day07 : Challenge(7) {
 
     private lateinit var fileSystemRoot: Node.Folder
     private lateinit var currentFolder: Node.Folder

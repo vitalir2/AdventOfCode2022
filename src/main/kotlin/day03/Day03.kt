@@ -3,8 +3,7 @@ package day03
 import Challenge
 import split
 
-object Day03 : Challenge {
-    override val day: Int = 3
+object Day03 : Challenge(3) {
 
     override fun part1(input: List<String>): Int {
         return input.sumOf(::calculatePriority)

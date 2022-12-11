@@ -4,8 +4,7 @@ import Challenge
 
 private typealias Forest = List<List<Int>>
 
-object Day08 : Challenge {
-    override val day: Int = 8
+object Day08 : Challenge(8) {
 
     override fun part1(input: List<String>): Any {
         val forest = createForest(input)

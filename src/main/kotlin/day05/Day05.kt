@@ -4,8 +4,7 @@ import Challenge
 import java.util.*
 import map
 
-object Day05 : Challenge {
-    override val day: Int = 5
+object Day05 : Challenge(5) {
 
     override fun part1(input: List<String>): String {
         return solveStacksProblem(parse(input)) { command, fromStack, toStack ->

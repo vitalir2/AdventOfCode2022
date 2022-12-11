@@ -2,8 +2,7 @@ package day01
 
 import Challenge
 
-object Day01 : Challenge  {
-    override val day: Int = 1
+object Day01 : Challenge(1) {
 
     override fun part1(input: List<String>): Int {
         return calculateCaloriesForEveryElf(input).maxOrNull() ?: 0
