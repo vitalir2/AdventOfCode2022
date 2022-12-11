@@ -1,24 +1,45 @@
 package day11
 
 import Challenge
+import product
+
+private typealias MonkeyId = Int
 
 object Day11 : Challenge {
     override val day: Int = 11
 
     override fun part1(input: List<String>): Any {
+        return solveDay(input, 20) { level -> level / 3 }
+    }
+
+    override fun part2(input: List<String>): Any {
+        return solveDay(input, 10000)
+    }
+
+    private fun solveDay(
+        input: List<String>,
+        rounds: Int,
+        onNewLevelCalculated: (worryLevel: Int) -> Int = { it },
+    ): Long {
         val monkeys = buildList {
             input
                 .map(String::trim)
                 .chunked(7) // length of one monkey input + line break
-                .map(::createMonkeyFromInput)
+                .map(Day11::createMonkeyFromInput)
                 .forEach(::add)
         }
 
-        val inspectItemsCount: MutableMap<Int, Long> = mutableMapOf()
-        repeat(20) {
-            executeRound(monkeys) { monkeyNumber ->
-                val lastValue = inspectItemsCount[monkeyNumber] ?: 0
-                inspectItemsCount[monkeyNumber] = lastValue + 1
+        // we only need to know if item is divisible by some number
+        // so we can keep them in the ring of integers modulo "product of the numbers which we need divide by"
+        val modulus = monkeys
+            .map { it.divisibilityNumber.toLong() }
+            .product()
+
+        val inspectItemsCount: MutableMap<MonkeyId, Long> = mutableMapOf()
+        repeat(rounds) {
+            executeRound(monkeys, modulus, onNewLevelCalculated) { monkeyId ->
+                val lastValue = inspectItemsCount[monkeyId] ?: 0
+                inspectItemsCount[monkeyId] = lastValue + 1
             }
         }
 
@@ -26,14 +47,15 @@ object Day11 : Challenge {
             .values
             .sortedDescending()
             .take(2)
-            .reduce { acc, i -> acc * i }
-    }
-
-    override fun part2(input: List<String>): Any {
-        TODO("Not yet implemented")
+            .product()
     }
 
     private fun createMonkeyFromInput(input: List<String>): Monkey {
+        val monkeyId = input[0]
+            .removePrefix("Monkey ")
+            .takeWhile(Char::isDigit)
+            .toInt()
+
         val initItems = input[1]
             .removePrefix("Starting items: ")
             .split(", ")
@@ -69,6 +91,7 @@ object Day11 : Challenge {
         )
 
         return Monkey(
+            id = monkeyId,
             items = initItems.toMutableList(),
             changeWorryLevel = changeWorryLevel,
             divisibilityTest = divisibilityTest,
@@ -92,14 +115,16 @@ object Day11 : Challenge {
 
     private fun executeRound(
         monkeys: List<Monkey>,
-        onItemInspected: (monkeyNumber: Int) -> Unit,
+        modulus: Long,
+        transformLevel: (worryLevel: Int) -> Int,
+        onItemInspected: (monkeyId: MonkeyId) -> Unit,
     ) {
-        for ((monkeyNumber, monkey) in monkeys.withIndex()) {
+        for (monkey in monkeys) {
             val thrownItems = mutableListOf<ThrownItem>()
             for (item in monkey.items) {
-                onItemInspected(monkeyNumber)
-                val newWorryLevel = monkey.changeWorryLevel.execute(item) / 3
-                val newMonkeyOwner = monkey.divisibilityTest.test(newWorryLevel)
+                onItemInspected(monkey.id)
+                val newWorryLevel = transformLevel((monkey.changeWorryLevel(item) % modulus).toInt())
+                val newMonkeyOwner = monkey.test(newWorryLevel)
                 thrownItems += ThrownItem(
                     worryLevel = newWorryLevel,
                     toMonkey = newMonkeyOwner,
@@ -117,11 +142,23 @@ object Day11 : Challenge {
         val toMonkey: Int,
     )
 
-    private data class Monkey(
+    private class Monkey(
+        val id: MonkeyId,
         val items: MutableList<Int>,
-        val changeWorryLevel: Expression,
-        val divisibilityTest: DivisibilityTest,
+        private val changeWorryLevel: Expression,
+        private val divisibilityTest: DivisibilityTest,
     ) {
+
+        val divisibilityNumber: Int
+            get() = divisibilityTest.number
+
+        fun changeWorryLevel(item: Int): Long {
+            return changeWorryLevel.execute(item)
+        }
+
+        fun test(worryLevel: Int): Int {
+            return divisibilityTest.test(worryLevel)
+        }
 
         class Expression(
             private val left: Operand,
@@ -139,15 +176,15 @@ object Day11 : Challenge {
                 MULTIPLICATION,
             }
 
-            fun execute(oldValue: Int): Int {
+            fun execute(oldValue: Int): Long {
                 val leftValue = when (left) {
                     is Operand.Number -> left.number
                     is Operand.OldExpressionValue -> oldValue
-                }
+                }.toLong()
                 val rightValue = when (right) {
                     is Operand.Number -> right.number
                     is Operand.OldExpressionValue -> oldValue
-                }
+                }.toLong()
                 return when (operation) {
                     Operation.ADDITION -> leftValue + rightValue
                     Operation.MULTIPLICATION -> leftValue * rightValue
@@ -155,7 +192,7 @@ object Day11 : Challenge {
             }
         }
         class DivisibilityTest(
-            private val number: Int,
+            val number: Int,
             private val throwToIfPassed: Int,
             private val throwToIfFailed: Int,
         ) {

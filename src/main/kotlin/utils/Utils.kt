@@ -34,3 +34,7 @@ fun String.toIntRange(separator: String): IntRange {
 inline fun <T, U> IndexedValue<T>.map(transform: (T) -> U): IndexedValue<U> {
     return IndexedValue(index, transform(value))
 }
+
+fun Iterable<Long>.product(): Long {
+    return reduce { acc, l -> acc * l }
+}
