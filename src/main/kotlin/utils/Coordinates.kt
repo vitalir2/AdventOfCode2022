@@ -24,6 +24,10 @@ data class Coordinates(
         return adjacentOnVertical(other) || adjacentOnHorizontal(other) || adjacentOnDiagonal(other)
     }
 
+    infix fun adjacentCross(other: Coordinates): Boolean {
+        return adjacentOnVertical(other) || adjacentOnHorizontal(other)
+    }
+
     private fun adjacentOnVertical(other: Coordinates): Boolean {
         return (x == other.x && y == other.y - 1) || (x == other.x && y == other.y + 1)
     }
