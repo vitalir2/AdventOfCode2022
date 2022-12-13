@@ -59,53 +59,20 @@ object Day12 : Challenge(12) {
     // Dijkstra's algo
     override fun part1(input: List<String>): Any {
         val heightmap = parseInput(input)
-        val visitedPoints = mutableSetOf<Heightmap.Point>()
-        val pointToDistance = mutableMapOf<Heightmap.Point, Int>()
-        val pointToPrev = mutableMapOf<Heightmap.Point, Heightmap.Point>()
-        val queue = PriorityQueue<Heightmap.Point> { first, second ->
-            val firstDistance = pointToDistance[first]
-            val secondDistance = pointToDistance[second]
-            when {
-                firstDistance == null && secondDistance == null -> 0
-                firstDistance == null -> -1
-                secondDistance == null -> 1
-                else -> firstDistance.compareTo(secondDistance)
-            }
-        }
-
-        pointToDistance[heightmap.startPoint] = 0
-        queue.offer(heightmap.startPoint)
-
-        while (queue.isNotEmpty()) {
-            val point = queue.poll()
-            val distance = pointToDistance[point]!!
-            val reachablePoints = heightmap.reachablePoints(from = point)
-            for (reachablePoint in reachablePoints) {
-                if (reachablePoint !in visitedPoints && reachablePoint !in queue) {
-                    val distanceToReachablePoint = pointToDistance[reachablePoint]
-                    if (distanceToReachablePoint == null || distance + 1 < distanceToReachablePoint) {
-                        pointToDistance[reachablePoint] = distance + 1
-                        pointToPrev[reachablePoint] = point
-                    }
-                    queue.offer(reachablePoint)
-                }
-            }
-            visitedPoints.add(point)
-        }
-
-        val finalPath = buildList {
-            var currentPoint: Heightmap.Point? = heightmap.endPoint
-            while (currentPoint != null) {
-                add(currentPoint)
-                currentPoint = pointToPrev[currentPoint]
-            }
-        }
-        heightmap.printPath(finalPath.reversed())
-        return finalPath.size - 1
+        val path = dijkstra(heightmap, heightmap.startPoint)
+        heightmap.printPath(path.reversed())
+        return path.size - 1
     }
 
     override fun part2(input: List<String>): Any {
-        TODO("Not yet implemented")
+        val heightmap = parseInput(input)
+        val startingPoints = heightmap.points.filter { it.height == 'a' }
+        val paths = startingPoints
+            .map { dijkstra(heightmap, it) }
+            .filter { it.size > 1 }
+        val minPath = paths.minBy(List<Heightmap.Point>::size)
+        heightmap.printPath(minPath.reversed())
+        return minPath.size - 1
     }
 
     private fun parseInput(input: List<String>): Heightmap {
@@ -129,5 +96,49 @@ object Day12 : Challenge(12) {
             endPoint = endPoint,
             points = points,
         )
+    }
+
+    private fun dijkstra(heightmap: Heightmap, startPoint: Heightmap.Point): List<Heightmap.Point> {
+        val visitedPoints = mutableSetOf<Heightmap.Point>()
+        val pointToDistance = mutableMapOf<Heightmap.Point, Int>()
+        val pointToPrev = mutableMapOf<Heightmap.Point, Heightmap.Point>()
+        val queue = PriorityQueue<Heightmap.Point> { first, second ->
+            val firstDistance = pointToDistance[first]
+            val secondDistance = pointToDistance[second]
+            when {
+                firstDistance == null && secondDistance == null -> 0
+                firstDistance == null -> -1
+                secondDistance == null -> 1
+                else -> firstDistance.compareTo(secondDistance)
+            }
+        }
+
+        pointToDistance[startPoint] = 0
+        queue.offer(startPoint)
+
+        while (queue.isNotEmpty()) {
+            val point = queue.poll()
+            val distance = pointToDistance[point]!!
+            val reachablePoints = heightmap.reachablePoints(from = point)
+            for (reachablePoint in reachablePoints) {
+                if (reachablePoint !in visitedPoints && reachablePoint !in queue) {
+                    val distanceToReachablePoint = pointToDistance[reachablePoint]
+                    if (distanceToReachablePoint == null || distance + 1 < distanceToReachablePoint) {
+                        pointToDistance[reachablePoint] = distance + 1
+                        pointToPrev[reachablePoint] = point
+                    }
+                    queue.offer(reachablePoint)
+                }
+            }
+            visitedPoints.add(point)
+        }
+
+        return buildList {
+            var currentPoint: Heightmap.Point? = heightmap.endPoint
+            while (currentPoint != null) {
+                add(currentPoint)
+                currentPoint = pointToPrev[currentPoint]
+            }
+        }
     }
 }

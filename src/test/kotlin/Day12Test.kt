@@ -18,5 +18,19 @@ class Day12Test : StringSpec() {
 
             result shouldBe 31
         }
+
+        "AOC example, part 2" {
+            val input = """
+                Sabqponm
+                abcryxxl
+                accszExk
+                acctuvwj
+                abdefghi
+            """.trimIndent().lines()
+
+            val result = Day12.part2(input)
+
+            result shouldBe 29
+        }
     }
 }
