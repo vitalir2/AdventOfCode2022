@@ -38,3 +38,7 @@ inline fun <T, U> IndexedValue<T>.map(transform: (T) -> U): IndexedValue<U> {
 fun Iterable<Long>.product(): Long {
     return reduce { acc, l -> acc * l }
 }
+
+fun Iterable<Int>.product(): Int {
+    return reduce { acc, l -> acc * l }
+}

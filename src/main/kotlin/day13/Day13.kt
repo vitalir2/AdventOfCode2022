@@ -1,6 +1,7 @@
 package day13
 
 import Challenge
+import product
 
 object Day13 : Challenge(13) {
     override fun part1(input: List<String>): Int {
@@ -12,7 +13,24 @@ object Day13 : Challenge(13) {
     }
 
     override fun part2(input: List<String>): Any {
-        TODO("Not yet implemented")
+        val dividerPackets = listOf(
+            PacketData(PacketData.Value.List(PacketData.Value.List(PacketData.Value.Number(2)))),
+            PacketData(PacketData.Value.List(PacketData.Value.List(PacketData.Value.Number(6)))),
+        )
+        val sortedPackets = input
+            .filter(String::isNotBlank)
+            .map(::parsePacketData)
+            .toMutableList().apply { addAll(dividerPackets) }
+            .toList()
+            .sortedWith { left, right -> isValuesInRightOrder(left.value, right.value) }
+            .reversed()
+
+        return sortedPackets
+            .mapIndexed { index, packetData -> index + 1 to packetData }
+            .toMap()
+            .filterValues(dividerPackets::contains)
+            .map(Map.Entry<Int, PacketData>::key)
+            .product()
     }
 
     private fun parseInput(input: List<String>): List<Pair<PacketData, PacketData>> {
@@ -92,24 +110,24 @@ object Day13 : Challenge(13) {
 
     private fun isPairInTheRightOrder(pair: Pair<PacketData, PacketData>): Boolean {
         val (first, second) = pair.toList().map(PacketData::value)
-        return isValuesInRightOrder(first, second)!!
+        return isValuesInRightOrder(first, second).toBooleanOrNull()!!
     }
 
-    private fun isValuesInRightOrder(left: PacketData.Value, right: PacketData.Value): Boolean? {
+    private fun isValuesInRightOrder(left: PacketData.Value, right: PacketData.Value): Int {
         return when {
             left is PacketData.Value.Number && right is PacketData.Value.Number ->
-                right.value.compareTo(left.value).toBooleanOrNull()
+                right.value.compareTo(left.value)
             left is PacketData.Value.List && right is PacketData.Value.List -> {
                 val values = left.value.zip(right.value)
-                var isInRightOrder: Boolean? = null
+                var isInRightOrder = 0
                 for (value in values) {
                     val result = isValuesInRightOrder(value.first, value.second)
-                    if (result != null) {
+                    if (result != 0) {
                         isInRightOrder = result
                         break
                     }
                 }
-                isInRightOrder ?: right.value.size.compareTo(left.value.size).toBooleanOrNull()
+                if (isInRightOrder == 0) right.value.size.compareTo(left.value.size) else isInRightOrder
             }
             left is PacketData.Value.Number && right is PacketData.Value.List -> {
                 isValuesInRightOrder(PacketData.Value.List(listOf(left)), right)
@@ -137,6 +155,8 @@ object Day13 : Challenge(13) {
                 }
             }
             data class List(val value: kotlin.collections.List<Value>) : Value {
+
+                constructor(single: Value) : this(listOf(single))
                 override fun toString(): String {
                     return "[${value.joinToString(",")}]"
                 }
