@@ -15,5 +15,16 @@ class Day14Test : StringSpec() {
 
             result shouldBe 24
         }
+
+        "part 2, AOC example" {
+            val input = """
+                498,4 -> 498,6 -> 496,6
+                503,4 -> 502,4 -> 502,9 -> 494,9
+            """.trimIndent().lines()
+
+            val result = Day14.part2(input)
+
+            result shouldBe 93
+        }
     }
 }
