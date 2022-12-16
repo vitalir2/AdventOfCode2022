@@ -10,9 +10,8 @@ object Day15 : Challenge(day = 15) {
         val y = input.first().toInt()
         val beaconZone = createZone(
             input = input.drop(1),
-            isDebug = true,
+            isDebug = false,
         )
-        beaconZone.emulate()
         return beaconZone
             .positionsWithoutBeacon(yPos = y)
             .size
@@ -68,8 +67,12 @@ object Day15 : Challenge(day = 15) {
             beaconsCoordinates + sensorsCoordinates
         }
 
+        private val maxRadius: Int by lazy {
+            sensorsWithClosestBeacon.maxOf(SensorWithClosestBeacon::radius)
+        }
+
         private val xRange: IntRange by lazy {
-            initialCoordinates.minOf(Coordinates::x)..initialCoordinates.maxOf(Coordinates::x)
+            initialCoordinates.minOf(Coordinates::x) - maxRadius..initialCoordinates.maxOf(Coordinates::x) + maxRadius
         }
 
         private val yRange: IntRange by lazy {
@@ -87,6 +90,26 @@ object Day15 : Challenge(day = 15) {
         }
 
         fun positionsWithoutBeacon(yPos: Int): List<Coordinates> {
+            return buildList {
+                for (x in xRange) {
+                    val coordinates = Coordinates(x = x, y = yPos)
+                    if (coordinates in beaconsCoordinates) {
+                        continue
+                    }
+
+                    val hasNoBeaconFromAnySensor = sensorsWithClosestBeacon.any { it.hasNoBeacon(coordinates) }
+                    if (hasNoBeaconFromAnySensor) {
+                        add(coordinates)
+                    }
+                }
+
+                if (isDebug) {
+                    drawHorizontalLineWithItsNeighbors(yPos, this.toSet())
+                }
+            }
+        }
+
+        fun positionsWithoutBeaconEmulated(yPos: Int): List<Coordinates> {
             val result = noBeaconCoordinates.filter { it.y == yPos }
 
             if (isDebug) {
@@ -122,7 +145,11 @@ object Day15 : Challenge(day = 15) {
             println(map)
         }
 
-        private fun drawHorizontalLineWithItsNeighbors(yPos: Int) {
+        private fun drawHorizontalLineWithItsNeighbors(
+            yPos: Int,
+            initNoBeaconCoordinates: Set<Coordinates>? = null,
+        ) {
+            val noBeaconCoordinates = initNoBeaconCoordinates ?: this.noBeaconCoordinates
             val map = StringBuilder()
             for (y in yPos - 1..yPos + 1) {
                 map.append("$y".padStart(length = 3) + " ")
@@ -144,11 +171,15 @@ object Day15 : Challenge(day = 15) {
             val sensor: Sensor,
             val beacon: Beacon,
         ) {
+            val radius: Int
+                get() = sensor.coordinates.manhattanDistance(beacon.coordinates)
+
             val noBeaconCoordinates: Set<Coordinates>
-                get() {
-                    val radius = sensor.coordinates.manhattanDistance(beacon.coordinates)
-                    return sensor.visibleRange(radius)
-                }
+                get() = sensor.visibleRange(radius)
+
+            fun hasNoBeacon(other: Coordinates): Boolean {
+                return radius >= sensor.coordinates.manhattanDistance(other)
+            }
         }
 
         data class Sensor(
