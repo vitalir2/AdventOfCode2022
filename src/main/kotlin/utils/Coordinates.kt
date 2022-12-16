@@ -83,5 +83,5 @@ data class Coordinates(
 }
 
 fun String.toCoordinates(separator: String = ","): Coordinates {
-    return split(",").map(String::toInt).let { (x, y) -> Coordinates(x = x, y = y) }
+    return split(separator).map(String::toInt).let { (x, y) -> Coordinates(x = x, y = y) }
 }

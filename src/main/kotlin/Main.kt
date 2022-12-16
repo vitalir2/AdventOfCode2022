@@ -1,6 +1,6 @@
-import day14.Day14
+import day15.Day15
 
 fun main(args: Array<String>) {
-    val activeChallenge = Day14
+    val activeChallenge = Day15
     activeChallenge.run(part = args[0].toInt())
 }
